@@ -1,0 +1,1802 @@
+
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#007C7A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fellerhoff">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Fellerhoff Med Tec · Sales Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="/icons/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+<link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#007C7A">
+<link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%;font-family:'Montserrat','Arial',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#F7F9FA;color:#1A1A1A;overscroll-behavior:none;font-weight:400}
+:root{
+  /* Fellerhoff Med Tec CI */
+  /* Fellerhoff CI – Petrol/Mint-Farbwelt */
+  --blue:#007C7A;                /* Petrol-Blau – Akzente & Markenbotschaften */
+  --blue-dark:#005E5C;            /* Petrol dunkel – Header, Hover */
+  --blue-light:#A7E7E2;           /* Türkis/Mint-Blau – Hintergrund, Highlight */
+  --orange:#007C7A;               /* Akzente einheitlich in Petrol */
+  --orange-dark:#005E5C;
+  --orange-light:#A7E7E2;
+  --green:#007C7A;                /* Positiv-Signale ebenfalls Petrol */
+  --green-dark:#005E5C;
+  --green-light:#A7E7E2;
+  --bg:#F7F9FA;                   /* Grundhintergrund kühl-neutral */
+  --card:#FFFFFF;
+  --border:#E5E8EB;               /* dezente Trennlinien */
+  --text:#1A1A1A;                 /* Dunkelgrau/Schwarz – Haupttext */
+  --text-mute:#6E6E6E;             /* Hellgrau – Fußnoten */
+  --ok:#007C7A;                   /* Petrol als Zielerreichungs-Signal */
+  --ok-bg:#A7E7E2;
+  --warn:#B85C00;                 /* dezente Warn-Tönung (Warm-Amber) */
+  --warn-bg:#FFEACC;
+  --bad:#8F1E1E;                  /* dezente Fehler-Tönung */
+  --bad-bg:#F5D7D7;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+}
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+.hd{padding:calc(14px + var(--safe-top)) 16px 12px;background:var(--blue-dark);color:#fff;border-bottom:3px solid var(--orange);flex-shrink:0}
+.hd .brand{font-size:11px;letter-spacing:1px;opacity:0.85;text-transform:uppercase;margin-bottom:2px}
+.h-title{font-size:20px;font-weight:600;margin:0}
+.h-sub{font-size:13px;opacity:0.85;margin:2px 0 0;display:flex;align-items:center;gap:8px}
+.mnav{display:flex;align-items:center;gap:6px;margin-top:8px;background:rgba(255,255,255,0.1);border-radius:10px;padding:4px;width:fit-content}
+.mnav button{background:none;border:none;color:#fff;font-size:13px;padding:5px 12px;cursor:pointer;border-radius:7px;font-family:inherit}
+.mnav .arr{padding:5px 8px;font-size:16px;font-weight:600}
+.mnav .month{font-weight:500;min-width:90px;text-align:center}
+
+main{flex:1;overflow-y:auto;padding:14px;-webkit-overflow-scrolling:touch}
+.lbl{font-size:11px;color:var(--text-mute);text-transform:uppercase;letter-spacing:0.5px;margin:14px 0 8px;font-weight:500}
+.lbl:first-child{margin-top:0}
+.card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.card.tap{cursor:pointer}
+.card.tap:active{background:#f0f4fa}
+
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kpi{background:var(--card);border:0.5px solid var(--border);border-radius:10px;padding:10px 12px;border-left:3px solid var(--border)}
+.kpi .l{font-size:11px;color:var(--text-mute);margin-bottom:2px}
+.kpi .v{font-size:22px;font-weight:600;line-height:1.1;color:var(--blue-dark)}
+.kpi .s{font-size:10px;color:var(--text-mute);margin-top:2px}
+.kpi.ok{border-left-color:var(--ok)} .kpi.ok .v{color:var(--ok)}
+.kpi.bad{border-left-color:var(--bad)} .kpi.bad .v{color:var(--bad)}
+.kpi.warn{border-left-color:var(--warn)} .kpi.warn .v{color:var(--warn)}
+.kpi.featured{background:var(--blue-dark);color:#fff;border-left-color:var(--orange)}
+.kpi.featured .l{color:#D6F0EE} .kpi.featured .v{color:#fff} .kpi.featured .s{color:#D6F0EE}
+
+.row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--border);font-size:14px;gap:8px}
+.row:last-child{border-bottom:none}
+.row .k{color:var(--text-mute)}
+.row .x{color:var(--text);font-weight:500;text-align:right}
+
+.cust{padding:11px 14px;border-bottom:0.5px solid var(--border);cursor:pointer}
+.cust:active{background:#f0f4fa}
+.cust:last-child{border-bottom:none}
+.cust .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.cust .n{font-size:15px;font-weight:600;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cust .m{font-size:12px;color:var(--text-mute);margin-top:3px}
+.chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;flex-shrink:0}
+.chip.o{background:var(--warn-bg);color:var(--warn)}
+.chip.d{background:var(--ok-bg);color:var(--ok)}
+.chip.l{background:var(--bad-bg);color:var(--bad)}
+.chip.aor{background:var(--orange-light);color:var(--orange-dark);margin-left:6px}
+.chip.typ{background:var(--blue-light);color:var(--blue-dark);font-size:9px;padding:2px 6px;margin-right:6px}
+
+.search{width:100%;padding:11px 14px;font-size:15px;border:0.5px solid var(--border);border-radius:10px;background:var(--card);margin-bottom:10px;color:var(--text);-webkit-appearance:none}
+.frow{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.fc{padding:6px 12px;border-radius:999px;font-size:12px;border:0.5px solid var(--border);background:var(--card);cursor:pointer;color:var(--text-mute);font-family:inherit}
+.fc.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;color:var(--text-mute);margin-bottom:5px;font-weight:500}
+.field input,.field textarea,.field select{width:100%;padding:11px 13px;font-size:15px;border:0.5px solid var(--border);border-radius:9px;background:var(--card);color:var(--text);font-family:inherit;-webkit-appearance:none}
+.field input[type="date"]{padding:10px 12px}
+.field textarea{resize:vertical;min-height:60px}
+.frow2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tg{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--card);border:0.5px solid var(--border);border-radius:9px;margin-bottom:7px;cursor:pointer}
+.tg input{width:20px;height:20px;margin:0;accent-color:var(--blue)}
+.tg label{font-size:14px;color:var(--text);margin:0;font-weight:400;flex:1;cursor:pointer}
+
+.seg{display:flex;background:var(--blue-light);border-radius:10px;padding:3px;margin-bottom:14px}
+.seg button{flex:1;background:none;border:none;padding:9px 6px;font-size:13px;font-weight:500;color:var(--blue-dark);cursor:pointer;border-radius:8px;font-family:inherit}
+.seg button.active{background:var(--blue);color:#fff}
+
+.btn{width:100%;padding:13px;background:var(--orange);color:#fff;border:none;border-radius:11px;font-size:15px;font-weight:600;cursor:pointer;margin-top:10px;font-family:inherit}
+.btn:active{background:var(--orange-dark)}
+.btn.ghost{background:none;color:var(--blue);border:0.5px solid var(--border)}
+.btn.danger{background:var(--bad)}
+.btn-row{display:flex;gap:8px}
+.btn-row .btn{margin-top:0}
+
+.tb{display:flex;border-top:0.5px solid var(--border);background:var(--card);padding:8px 4px calc(10px + var(--safe-bot));align-items:center;flex-shrink:0}
+.tab{flex:1;background:none;border:none;padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--text-mute);cursor:pointer;font-family:inherit;font-weight:500}
+.tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+.tab.active{color:var(--blue)}
+.tab.add{background:var(--orange);color:#fff;border-radius:50%;width:50px;height:50px;flex:0 0 50px;padding:0;justify-content:center;box-shadow:0 4px 10px rgba(232,118,45,0.35);margin:0 4px}
+.tab.add svg{width:26px;height:26px;stroke-width:2.3}
+.tab.add:active{background:var(--orange-dark)}
+
+.empty{text-align:center;padding:32px 16px;color:var(--text-mute);font-size:14px}
+.empty .ic{font-size:40px;opacity:0.4;margin-bottom:8px;color:var(--blue)}
+
+.notice{background:var(--blue-light);color:var(--blue-dark);padding:10px 12px;border-radius:9px;font-size:12px;line-height:1.5;margin:8px 0;border-left:3px solid var(--blue)}
+.notice.orange{background:var(--orange-light);color:var(--orange-dark);border-left-color:var(--orange)}
+
+.detail-name{font-size:22px;font-weight:600;color:var(--blue-dark);margin:0 0 4px}
+.detail-typ{font-size:13px;color:var(--text-mute);margin-bottom:14px}
+.big{font-size:32px;font-weight:600;color:var(--blue-dark);line-height:1}
+.big-s{font-size:12px;color:var(--text-mute);margin-top:4px}
+
+.status-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;margin-bottom:14px}
+.status-pill.o{background:var(--warn-bg);color:var(--warn)}
+.status-pill.d{background:var(--ok-bg);color:var(--ok)}
+.status-pill.l{background:var(--bad-bg);color:var(--bad)}
+.status-pill .dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+
+@media (prefers-color-scheme: dark){
+  body{background:#0f1419;color:#e5e9f0}
+  :root{--bg:#0f1419;--card:#1c2230;--border:#2a3344;--text:#e5e9f0;--text-mute:#9aa4b8;--blue-light:#1d2c47;--orange-light:#3a1f0f;--ok-bg:#0f3a2a;--warn-bg:#3a1f0f;--bad-bg:#3a1818}
+  .seg{background:#1d2c47}
+  .seg button{color:#d8e4f5}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<div id="app">
+  <header class="hd">
+    <div class="brand">Fellerhoff Med Tec · Sales Tracker</div>
+    <h1 class="h-title" id="hTitle">Dashboard</h1>
+    <p class="h-sub" id="hSub">Lädt...</p>
+    <div class="mnav" id="mNav" style="display:none">
+      <button class="arr" data-month-prev>‹</button>
+      <span class="month" id="mLabel">Juni 2026</span>
+      <button class="arr" data-month-next>›</button>
+      <button data-month-today>Heute</button>
+    </div>
+  </header>
+
+  <main id="main"></main>
+
+  <nav class="tb">
+    <button class="tab active" data-go="dashboard">
+      <svg viewBox="0 0 24 24"><path d="M3 13l9-9 9 9M5 11v9h14v-9"/></svg>
+      <span>Start</span>
+    </button>
+    <button class="tab" data-go="liste">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      <span>Liste</span>
+    </button>
+    <button class="tab add" data-go="neu" aria-label="Neuer Vorgang">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+    <button class="tab" data-go="offen">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      <span>Offen</span>
+    </button>
+    <button class="tab" data-go="mehr">
+      <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+      <span>Mehr</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+// ========== STORAGE ==========
+const STORAGE_KEY = 'volksrolli_tracker_v1';
+const DEFAULT_SETTINGS = {
+  ziel_v2r: 0.72,
+  ziel_v2gb: 0.20,
+  ziel_eigenlead: 0.05,
+  ziel_tl: 0.02,
+  ziel_aor: 0.10,
+  benachrichtigungen_aktiviert: false,
+  benachrichtigung_ab_tagen: 7,
+};
+
+// Zentrale Provisionssätze – werden von Dashboard und Provisionsübersicht genutzt
+const PROVISION_RATES = {
+  ret_rezept: 75,        // Rezepteingang RET
+  set_rezept: 50,        // Rezepteingang SET
+  eigenlead_ret: 50,     // Zuschlag Eigenlead auf RET
+  eigenlead_set: 50,     // Zuschlag Eigenlead auf SET
+  gb: 35,                // Großelternbox
+  tl: 150,               // Treppenlift-Empfehlung
+};
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(e){ return null; }
+}
+
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      v: 1,
+      customers: state.customers,
+      settings: state.settings,
+    }));
+  }catch(e){
+    alert('Speichern fehlgeschlagen: ' + e.message);
+  }
+}
+
+// ========== STATE ==========
+const state = (function init(){
+  const loaded = loadState();
+  const now = new Date();
+  const ym = now.toISOString().slice(0,7);
+  const customers = loaded ? (loaded.customers || []) : [];
+  // Migration: bestehende notizen zum ersten kommentar machen
+  for(const c of customers){
+    if(!Array.isArray(c.kommentare)) c.kommentare = [];
+    if(c.notizen && c.notizen.trim() && c.kommentare.length === 0){
+      c.kommentare.push({
+        ts: c.created_at || Date.now(),
+        text: c.notizen.trim(),
+      });
+    }
+  }
+  return {
+    view: 'dashboard',
+    customers,
+    settings: Object.assign({}, DEFAULT_SETTINGS, loaded ? (loaded.settings || {}) : {}),
+    selectedMonth: ym,
+    editingId: null,
+    listFilter: 'alle',
+    searchQuery: '',
+  };
+})();
+
+// ========== HELPERS ==========
+function uid(){ return 'c_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,7); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function escapeHTML(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtDate(d){ if(!d) return '–'; const [y,m,dd] = d.split('-'); return `${dd}.${m}.${y}`; }
+function fmtTs(ts){
+  if(!ts) return '';
+  return new Date(ts).toLocaleString('de-DE', {
+    day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'
+  });
+}
+
+// Vorgänge, die schon 7+ Tage offen sind
+const OVERDUE_DAYS = 7;
+function daysBetween(d1, d2){
+  return Math.floor((d2 - d1) / 86400000);
+}
+function getOverdueOrders(){
+  const today = new Date();
+  const out = [];
+  for(const c of state.customers){
+    if(computeStatus(c) !== 'Offen') continue;
+    if(!c.datum) continue;
+    const days = daysBetween(new Date(c.datum), today);
+    if(days >= OVERDUE_DAYS) out.push({ c, days });
+  }
+  out.sort((a,b) => b.days - a.days);
+  return out;
+}
+function monthName(ym){ const [y,m] = ym.split('-'); return ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'][parseInt(m)-1] + ' ' + y; }
+function monthOf(d){ return d ? d.slice(0,7) : null; }
+function daysBetween(a,b){ return Math.floor((new Date(b) - new Date(a)) / 86400000); }
+function pct(n){ return Math.round(n*100); }
+function shiftMonth(ym, delta){
+  let [y,m] = ym.split('-').map(Number);
+  m += delta;
+  while(m < 1){ m += 12; y -= 1; }
+  while(m > 12){ m -= 12; y += 1; }
+  return y + '-' + String(m).padStart(2,'0');
+}
+
+// Status auto-compute
+function computeStatus(c){
+  if(c.status_manual) return c.status_manual;
+  if(c.rolli_verloren) return 'Verloren';
+  if((c.typ === 'RET' || c.typ === 'SET') && c.rezept_eingang) return 'Abgeschlossen';
+  if(c.typ === 'NB') return 'Abgeschlossen';
+  return 'Offen';
+}
+function isAoR(c){
+  return (c.typ === 'RET' || c.typ === 'SET') && !c.rolli_verloren && !c.rezept_eingang && computeStatus(c) === 'Offen';
+}
+
+// KPI for month
+function computeKPIs(ym){
+  const inMonth = state.customers.filter(c => monthOf(c.datum) === ym);
+  const ret_set = inMonth.filter(c => c.typ === 'RET' || c.typ === 'SET');
+  const verloren = ret_set.filter(c => c.rolli_verloren).length;
+  const netto = ret_set.length; // Verluste zählen als Nettotermin (nur für Offene-Liste geschlossen)
+  // Rolling: prescriptions are counted in the month they were received, not the appointment month
+  const mit_rezept = state.customers.filter(c =>
+    (c.typ === 'RET' || c.typ === 'SET') &&
+    !c.rolli_verloren &&
+    c.rezept_eingang &&
+    monthOf(c.rezept_eingang) === ym
+  ).length;
+  // AoR: appointments from this month that still have no prescription
+  const aor = ret_set.filter(c => !c.rolli_verloren && !c.rezept_eingang).length;
+  const eigenlead = ret_set.filter(c => c.eigenlead).length;
+  const geb = inMonth.filter(c => c.grosselternbox).length;
+  const tl = inMonth.filter(c => c.tl_empfehlung).length;
+  const nb = inMonth.filter(c => c.typ === 'NB').length;
+  return {
+    termine: inMonth.length,
+    ret_set: ret_set.length,
+    verloren, netto,
+    abgeschlossen: mit_rezept,
+    aor,
+    aor_rate: ret_set.length ? aor / ret_set.length : 0,
+    v2r: netto ? mit_rezept / netto : 0,
+    eigenlead, eigenlead_rate: netto ? eigenlead / netto : 0,
+    geb, v2gb_rate: netto ? geb / netto : 0,
+    tl, tl_rate: netto ? tl / netto : 0,
+    kombi_rate: netto ? (geb + eigenlead + tl) / netto : 0,
+    nb,
+  };
+}
+
+// Quarter helpers
+function quarterOfMonth(ym){
+  const [y,m] = ym.split('-').map(Number);
+  const q = Math.ceil(m/3);
+  const months = [];
+  for(let i=(q-1)*3+1; i<=q*3; i++) months.push(y+'-'+String(i).padStart(2,'0'));
+  const labels = ['Jan–Mär','Apr–Jun','Jul–Sep','Okt–Dez'];
+  return {year:y, quarter:q, label:'Q'+q+' '+y, sub:labels[q-1], months};
+}
+
+function computeQuarterKPIs(months){
+  const inQ = state.customers.filter(c => months.includes(monthOf(c.datum)));
+  const ret_set = inQ.filter(c => c.typ==='RET'||c.typ==='SET');
+  const verloren = ret_set.filter(c => c.rolli_verloren).length;
+  const netto = ret_set.length; // Verluste zählen als Nettotermin (nur für Offene-Liste geschlossen)
+  // Rolling: prescriptions are counted in the quarter they were received, not the appointment quarter
+  const abgeschlossen = state.customers.filter(c =>
+    (c.typ === 'RET' || c.typ === 'SET') &&
+    !c.rolli_verloren &&
+    c.rezept_eingang &&
+    months.includes(monthOf(c.rezept_eingang))
+  ).length;
+  // AoR: appointments from this quarter that still have no prescription
+  const aor = ret_set.filter(c => !c.rolli_verloren && !c.rezept_eingang).length;
+  const eigenlead = ret_set.filter(c => c.eigenlead).length;
+  const geb = inQ.filter(c => c.grosselternbox).length;
+  const tl = inQ.filter(c => c.tl_empfehlung).length;
+  const nb = inQ.filter(c => c.typ==='NB').length;
+  return {
+    termine: inQ.length, ret_set: ret_set.length,
+    verloren, netto, abgeschlossen, aor,
+    v2r: netto ? abgeschlossen/netto : 0,
+    eigenlead, eigenlead_rate: netto ? eigenlead/netto : 0,
+    geb, v2gb_rate: netto ? geb/netto : 0,
+    kombi_rate: netto ? (geb + eigenlead + tl) / netto : 0,
+    tl, nb,
+  };
+}
+
+// Provisionsberechnung für einen Monat:
+//   Rezepte + Eigenlead-Zuschläge  → Abrechnungsmonat (rezept_eingang)
+//   Großelternbox + TL-Empfehlung  → Erprobungsmonat (Termindatum)
+function computeProvision(ym){
+  const r = PROVISION_RATES;
+
+  // Rezepte, die in diesem Monat eingegangen sind (nicht verloren)
+  const rezepteInMonth = state.customers.filter(c =>
+    (c.typ === 'RET' || c.typ === 'SET') &&
+    !c.rolli_verloren &&
+    c.rezept_eingang &&
+    monthOf(c.rezept_eingang) === ym
+  );
+  const ret_cnt = rezepteInMonth.filter(c => c.typ === 'RET').length;
+  const set_cnt = rezepteInMonth.filter(c => c.typ === 'SET').length;
+  const ret_el_cnt = rezepteInMonth.filter(c => c.typ === 'RET' && c.eigenlead).length;
+  const set_el_cnt = rezepteInMonth.filter(c => c.typ === 'SET' && c.eigenlead).length;
+
+  // GB und TL am Terminmonat (datum)
+  const inMonth = state.customers.filter(c => monthOf(c.datum) === ym);
+  const gb_cnt = inMonth.filter(c => c.grosselternbox).length;
+  const tl_cnt = inMonth.filter(c => c.tl_empfehlung).length;
+
+  const ret_sum = ret_cnt * r.ret_rezept;
+  const set_sum = set_cnt * r.set_rezept;
+  const el_ret_sum = ret_el_cnt * r.eigenlead_ret;
+  const el_set_sum = set_el_cnt * r.eigenlead_set;
+  const gb_sum = gb_cnt * r.gb;
+  const tl_sum = tl_cnt * r.tl;
+  const total = ret_sum + set_sum + el_ret_sum + el_set_sum + gb_sum + tl_sum;
+
+  return {
+    ret_cnt, ret_sum,
+    set_cnt, set_sum,
+    ret_el_cnt, el_ret_sum,
+    set_el_cnt, el_set_sum,
+    gb_cnt, gb_sum,
+    tl_cnt, tl_sum,
+    total,
+  };
+}
+
+const fmtEUR = (n) => n.toLocaleString('de-DE') + ' €';
+
+// ========== ÜBERFÄLLIGE VORGÄNGE / BENACHRICHTIGUNGEN ==========
+function getOverdueVorgaenge(){
+  const today = todayISO();
+  const schwelle = state.settings.benachrichtigung_ab_tagen || 7;
+  return state.customers
+    .filter(c => (c.typ === 'RET' || c.typ === 'SET') && computeStatus(c) === 'Offen')
+    .map(c => ({ c, tage: daysBetween(c.datum, today) }))
+    .filter(x => x.tage >= schwelle)
+    .sort((a,b) => b.tage - a.tage);
+}
+
+function isNotifiedToday(customerId){
+  try{
+    const key = 'notified_' + todayISO();
+    const list = JSON.parse(localStorage.getItem(key) || '[]');
+    return list.includes(customerId);
+  }catch(e){ return false; }
+}
+function markNotifiedToday(customerId){
+  try{
+    const key = 'notified_' + todayISO();
+    const list = JSON.parse(localStorage.getItem(key) || '[]');
+    if(!list.includes(customerId)){
+      list.push(customerId);
+      localStorage.setItem(key, JSON.stringify(list));
+    }
+  }catch(e){}
+}
+function cleanupNotificationLogs(){
+  try{
+    const keep = new Set();
+    const now = new Date();
+    for(let i=0; i<14; i++){
+      const d = new Date(now); d.setDate(d.getDate() - i);
+      keep.add('notified_' + d.toISOString().slice(0,10));
+    }
+    for(let i = localStorage.length - 1; i >= 0; i--){
+      const k = localStorage.key(i);
+      if(k && k.startsWith('notified_') && !keep.has(k)) localStorage.removeItem(k);
+    }
+  }catch(e){}
+}
+
+async function requestNotificationPermission(){
+  if(!('Notification' in window)){
+    alert('Dein Browser oder deine iOS-Version unterstützt keine Push-Benachrichtigungen. Der Inline-Hinweis oben im Dashboard funktioniert aber trotzdem.');
+    return false;
+  }
+  const permission = await Notification.requestPermission();
+  return permission === 'granted';
+}
+
+async function checkAndFireNotifications(){
+  cleanupNotificationLogs();
+  if(!state.settings.benachrichtigungen_aktiviert) return;
+  if(!('Notification' in window) || Notification.permission !== 'granted') return;
+
+  const overdue = getOverdueVorgaenge();
+  let anyFired = false;
+  for(const { c, tage } of overdue){
+    if(isNotifiedToday(c.id)) continue;
+    try{
+      const title = `Vorgang seit ${tage} Tagen offen`;
+      const body = `${c.nachname}, ${c.vorname} (${c.typ}) – Termin ${fmtDate(c.datum)}`;
+      // Über Service Worker, damit es auch als PWA vom Home-Bildschirm funktioniert
+      if('serviceWorker' in navigator){
+        const reg = await navigator.serviceWorker.getRegistration();
+        if(reg && reg.showNotification){
+          await reg.showNotification(title, {
+            body, tag: 'overdue_' + c.id, requireInteraction: false,
+            icon: 'icons/apple-touch-icon.png', badge: 'icons/favicon-32x32.png',
+            data: { customerId: c.id },
+          });
+        } else {
+          new Notification(title, { body, tag: 'overdue_' + c.id });
+        }
+      } else {
+        new Notification(title, { body, tag: 'overdue_' + c.id });
+      }
+      markNotifiedToday(c.id);
+      anyFired = true;
+    }catch(e){ console.error('Notification failed', e); }
+  }
+  return anyFired;
+}
+
+// ========== RENDER: HEADER ==========
+function updateHeader(){
+  const titles = {
+    dashboard: ['Dashboard', monthName(state.selectedMonth)],
+    liste: ['Alle Vorgänge', state.customers.length + ' gespeichert'],
+    offen: ['Offene Vorgänge', ''],
+    neu: ['Neuer Vorgang', 'Termin erfassen'],
+    edit: ['Bearbeiten', 'Vorgang aktualisieren'],
+    mehr: ['Mehr', 'Einstellungen & Daten'],
+    provision: ['Provisionsübersicht', 'Staffelung & Zuschläge'],
+  };
+  const t = titles[state.view] || ['', ''];
+  document.getElementById('hTitle').textContent = t[0];
+  
+  if(state.view === 'offen'){
+    const cnt = state.customers.filter(c => computeStatus(c) === 'Offen').length;
+    const aorCnt = state.customers.filter(isAoR).length;
+    document.getElementById('hSub').textContent = cnt + ' offen · davon ' + aorCnt + ' ohne Rezept';
+  } else {
+    document.getElementById('hSub').textContent = t[1];
+  }
+  
+  document.getElementById('mNav').style.display = (state.view === 'dashboard') ? 'flex' : 'none';
+  document.getElementById('mLabel').textContent = monthName(state.selectedMonth);
+}
+
+// ========== RENDER: DASHBOARD ==========
+function renderDashboard(){
+  const k = computeKPIs(state.selectedMonth);
+  const s = state.settings;
+  
+  function kpiCls(rate, ziel){
+    if(rate >= ziel) return 'ok';
+    if(rate >= ziel * 0.8) return 'warn';
+    return 'bad';
+  }
+  function pp(rate, ziel){
+    const diff = Math.round((rate - ziel) * 100);
+    return (diff >= 0 ? '+' : '') + diff + ' pp';
+  }
+  
+  const aorCnt = state.customers.filter(isAoR).length;
+  const openCnt = state.customers.filter(c => computeStatus(c) === 'Offen').length;
+  const zielKombi = s.ziel_v2gb + s.ziel_eigenlead + s.ziel_tl;
+  
+  let html = '';
+  
+  // Warnhinweis: Vorgänge über der Schwelle (default 7 Tage)
+  const overdue = getOverdueVorgaenge();
+  if(overdue.length > 0){
+    const preview = overdue.slice(0, 3);
+    const more = overdue.length - preview.length;
+    const schwelle = state.settings.benachrichtigung_ab_tagen || 7;
+    html += `
+      <p class="lbl">Achtung – überfällige Vorgänge</p>
+      <div class="card tap" data-go="offen" style="background:var(--warn-bg);border-left:4px solid var(--warn);padding:12px 14px;margin-bottom:8px">
+        <div style="color:var(--warn);font-weight:600;font-size:14px;margin-bottom:6px">
+          ⚠ ${overdue.length} Vorgang${overdue.length !== 1 ? 'e' : ''} seit ${schwelle}+ Tagen offen
+        </div>
+        <div style="font-size:12.5px;color:var(--text);line-height:1.6">
+          ${preview.map(x => `<div><strong>${escapeHTML(x.c.nachname)}, ${escapeHTML(x.c.vorname)}</strong> · seit <strong>${x.tage} Tagen</strong> offen (${x.c.typ}, ${fmtDate(x.c.datum)})</div>`).join('')}
+          ${more > 0 ? `<div style="color:var(--text-mute);margin-top:4px">+ ${more} weitere in „Offen" ansehen</div>` : ''}
+        </div>
+      </div>
+    `;
+  }
+  
+  // AoR featured card (always visible, all-time backlog)
+  html += `
+    <p class="lbl">Aufträge ohne Rezept (aktuell offen)</p>
+    <div class="card tap" data-tap-aor style="background:var(--blue-dark);color:#fff;border:none;border-left:4px solid var(--orange);padding:14px 16px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:11px;color:#D6F0EE;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">AoR-Backlog</div>
+          <div style="font-size:30px;font-weight:600;line-height:1">${aorCnt}</div>
+          <div style="font-size:12px;color:#D6F0EE;margin-top:4px">Vorgänge warten auf Rezept</div>
+        </div>
+        <div style="font-size:24px;color:var(--orange)">›</div>
+      </div>
+    </div>
+  `;
+  
+  // Empty state
+  if(k.termine === 0){
+    html += `
+      <p class="lbl">${monthName(state.selectedMonth)}</p>
+      <div class="card empty">
+        <div class="ic">📅</div>
+        <div>Noch keine Termine in diesem Monat erfasst.</div>
+      </div>
+      <p class="lbl">Schnellzugriff</p>
+      <div class="card tap" data-go="offen">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:600;font-size:15px">Offene Vorgänge</div>
+            <div style="font-size:12px;color:var(--text-mute);margin-top:2px">${openCnt} insgesamt offen</div>
+          </div>
+          <div style="font-size:22px;color:var(--text-mute)">›</div>
+        </div>
+      </div>
+    `;
+    return html;
+  }
+  
+  // Quoten (4 Kacheln)
+  html += `
+    <p class="lbl">Quoten ${monthName(state.selectedMonth)}</p>
+    <div class="kpi-grid">
+      <div class="kpi ${kpiCls(k.v2r, s.ziel_v2r)}">
+        <div class="l">Rezeptquote</div>
+        <div class="v">${pct(k.v2r)}<span style="font-size:13px">%</span></div>
+        <div class="s">Ziel ${pct(s.ziel_v2r)} % · ${pp(k.v2r, s.ziel_v2r)}</div>
+      </div>
+      <div class="kpi ${kpiCls(k.v2gb_rate, s.ziel_v2gb)}">
+        <div class="l">GB-Quote</div>
+        <div class="v">${pct(k.v2gb_rate)}<span style="font-size:13px">%</span></div>
+        <div class="s">Ziel ${pct(s.ziel_v2gb)} % · ${pp(k.v2gb_rate, s.ziel_v2gb)}</div>
+      </div>
+      <div class="kpi ${kpiCls(k.kombi_rate, zielKombi)}">
+        <div class="l">Kombi-Quote</div>
+        <div class="v">${pct(k.kombi_rate)}<span style="font-size:13px">%</span></div>
+        <div class="s">GB + EL + TL · Ziel ${pct(zielKombi)} %</div>
+      </div>
+      <div class="kpi ${kpiCls(k.eigenlead_rate, s.ziel_eigenlead)}">
+        <div class="l">Eigenlead-Quote</div>
+        <div class="v">${pct(k.eigenlead_rate)}<span style="font-size:13px">%</span></div>
+        <div class="s">Ziel ${pct(s.ziel_eigenlead)} % · ${pp(k.eigenlead_rate, s.ziel_eigenlead)}</div>
+      </div>
+    </div>
+  `;
+  
+  // Anzahlen (3 große Zahlen)
+  html += `
+    <p class="lbl">Anzahlen ${monthName(state.selectedMonth)}</p>
+    <div class="kpi-grid" style="grid-template-columns:1fr 1fr 1fr;gap:6px">
+      <div class="kpi" style="text-align:center;padding:12px 6px">
+        <div class="l">Rezepte</div>
+        <div class="v" style="font-size:26px">${k.abgeschlossen}</div>
+        <div class="s">Rolli + Scooter</div>
+      </div>
+      <div class="kpi" style="text-align:center;padding:12px 6px">
+        <div class="l">GB</div>
+        <div class="v" style="font-size:26px">${k.geb}</div>
+        <div class="s">Großelternbox</div>
+      </div>
+      <div class="kpi" style="text-align:center;padding:12px 6px">
+        <div class="l">Eigenleads</div>
+        <div class="v" style="font-size:26px">${k.eigenlead}</div>
+        <div class="s">selbst akquir.</div>
+      </div>
+    </div>
+  `;
+  
+  // Quartalsauswertung
+  const curQ = quarterOfMonth(state.selectedMonth);
+  const kQ = computeQuarterKPIs(curQ.months);
+
+  const zielKombiQ = s.ziel_v2gb + s.ziel_eigenlead + s.ziel_tl;
+  const v2rClsQ = kQ.v2r >= s.ziel_v2r ? 'var(--ok)' : kQ.v2r >= s.ziel_v2r*0.8 ? 'var(--warn)' : 'var(--bad)';
+  const kombiClsQ = kQ.kombi_rate >= zielKombiQ ? 'var(--ok)' : kQ.kombi_rate >= zielKombiQ*0.8 ? 'var(--warn)' : 'var(--bad)';
+
+  html += `
+    <p class="lbl">Quartalszahlen · ${curQ.label} (${curQ.sub})</p>
+    <div class="card" style="border-left:3px solid var(--blue);padding:12px 14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div>
+          <span style="font-size:14px;font-weight:600;color:var(--blue-dark)">${curQ.label}</span>
+          <span style="font-size:12px;color:var(--text-mute);margin-left:6px">${curQ.sub}</span>
+        </div>
+      </div>
+      ${kQ.netto > 0 ? `<div class="kpi-grid" style="gap:6px;margin-bottom:10px">
+        <div style="background:var(--blue-light);border-radius:8px;padding:8px 10px;text-align:center;border-top:3px solid ${v2rClsQ}">
+          <div style="font-size:10px;color:var(--text-mute);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.3px">Rezeptquote</div>
+          <div style="font-size:22px;font-weight:600;color:${v2rClsQ}">${pct(kQ.v2r)}<span style="font-size:12px">%</span></div>
+          <div style="font-size:10px;color:var(--text-mute);margin-top:2px">Ziel ${pct(s.ziel_v2r)} %</div>
+        </div>
+        <div style="background:var(--blue-light);border-radius:8px;padding:8px 10px;text-align:center;border-top:3px solid ${kombiClsQ}">
+          <div style="font-size:10px;color:var(--text-mute);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.3px">Kombiquote</div>
+          <div style="font-size:22px;font-weight:600;color:${kombiClsQ}">${pct(kQ.kombi_rate)}<span style="font-size:12px">%</span></div>
+          <div style="font-size:10px;color:var(--text-mute);margin-top:2px">Ziel ${pct(zielKombiQ)} %</div>
+        </div>
+      </div>` : '<div style="font-size:12px;color:var(--text-mute);margin-bottom:10px">Noch keine Daten</div>'}
+      <div class="kpi-grid" style="gap:6px">
+        <div style="background:var(--blue-light);border-radius:8px;padding:8px 10px;text-align:center">
+          <div style="font-size:10px;color:var(--text-mute);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.3px">Termine</div>
+          <div style="font-size:20px;font-weight:600;color:var(--blue-dark)">${kQ.termine}</div>
+        </div>
+        <div style="background:var(--blue-light);border-radius:8px;padding:8px 10px;text-align:center">
+          <div style="font-size:10px;color:var(--text-mute);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.3px">Rezepte</div>
+          <div style="font-size:20px;font-weight:600;color:var(--blue-dark)">${kQ.abgeschlossen}</div>
+        </div>
+        <div style="background:var(--blue-light);border-radius:8px;padding:8px 10px;text-align:center">
+          <div style="font-size:10px;color:var(--text-mute);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.3px">GB</div>
+          <div style="font-size:20px;font-weight:600;color:var(--blue-dark)">${kQ.geb}</div>
+        </div>
+        <div style="background:var(--blue-light);border-radius:8px;padding:8px 10px;text-align:center">
+          <div style="font-size:10px;color:var(--text-mute);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.3px">Eigenleads</div>
+          <div style="font-size:20px;font-weight:600;color:var(--blue-dark)">${kQ.eigenlead}</div>
+        </div>
+      </div>
+      ${kQ.termine > 0 ? `<div style="margin-top:8px;border-top:0.5px solid var(--border);padding-top:8px;display:flex;gap:16px;font-size:12px;color:var(--text-mute);flex-wrap:wrap">
+        <span>Netto: <strong style="color:var(--text)">${kQ.netto}</strong></span>
+        <span>Verloren: <strong style="color:var(--text)">${kQ.verloren}</strong></span>
+        <span>AoR: <strong style="color:var(--orange-dark)">${kQ.aor}</strong></span>
+        <span>TL: <strong style="color:var(--text)">${kQ.tl}</strong></span>
+        <span>NB: <strong style="color:var(--text)">${kQ.nb}</strong></span>
+      </div>` : ''}
+    </div>
+  `;
+
+  // Termine-Übersicht (klein, ergänzend)
+  html += `
+    <p class="lbl">Termin-Übersicht ${monthName(state.selectedMonth)}</p>
+    <div class="card">
+      <div class="row"><span class="k">Erprobungen gesamt (RET+SET)</span><span class="x">${k.ret_set}</span></div>
+      <div class="row"><span class="k">davon verloren (zählen als Netto)</span><span class="x">${k.verloren}</span></div>
+      <div class="row"><span class="k">Nettotermine</span><span class="x">${k.netto}</span></div>
+      <div class="row"><span class="k">Aufträge ohne Rezept (Monat)</span><span class="x" style="color:var(--orange-dark)">${k.aor}</span></div>
+      <div class="row"><span class="k">TL-Empfehlungen</span><span class="x">${k.tl}</span></div>
+      <div class="row"><span class="k">Nachbesuche</span><span class="x">${k.nb}</span></div>
+    </div>
+  `;
+
+  // Provisionsberechnung des Monats
+  const p = computeProvision(state.selectedMonth);
+  const provisionRows = [
+    { label: `Rezepteingang RET · ${p.ret_cnt} × ${fmtEUR(PROVISION_RATES.ret_rezept)}`, sum: p.ret_sum },
+    { label: `Rezepteingang SET · ${p.set_cnt} × ${fmtEUR(PROVISION_RATES.set_rezept)}`, sum: p.set_sum },
+    { label: `Eigenlead-Zuschlag RET · ${p.ret_el_cnt} × ${fmtEUR(PROVISION_RATES.eigenlead_ret)}`, sum: p.el_ret_sum },
+    { label: `Eigenlead-Zuschlag SET · ${p.set_el_cnt} × ${fmtEUR(PROVISION_RATES.eigenlead_set)}`, sum: p.el_set_sum },
+    { label: `Großelternbox · ${p.gb_cnt} × ${fmtEUR(PROVISION_RATES.gb)}`, sum: p.gb_sum },
+    { label: `TL-Empfehlung · ${p.tl_cnt} × ${fmtEUR(PROVISION_RATES.tl)}`, sum: p.tl_sum },
+  ].filter(r => r.sum > 0);
+
+  html += `
+    <p class="lbl">Provision ${monthName(state.selectedMonth)}</p>
+    <div class="card" style="background:var(--blue-dark);color:#fff;border:none;border-left:4px solid var(--orange);padding:14px 16px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div style="font-size:11px;color:#D6F0EE;text-transform:uppercase;letter-spacing:0.5px">Summe des Monats</div>
+        <div style="font-size:24px;font-weight:700;line-height:1">${fmtEUR(p.total)}</div>
+      </div>
+    </div>
+    <div class="card">
+      ${provisionRows.length === 0
+        ? '<div style="padding:4px 0;font-size:13px;color:var(--text-mute);text-align:center">Noch keine provisionsrelevanten Vorgänge in diesem Monat.</div>'
+        : provisionRows.map(r => `
+          <div class="row">
+            <span class="k">${r.label}</span>
+            <span class="x">${fmtEUR(r.sum)}</span>
+          </div>`).join('')
+      }
+      ${provisionRows.length > 0 ? `
+        <div class="row" style="padding-top:10px">
+          <span class="k" style="font-weight:600;color:var(--text)">Gesamt</span>
+          <span class="x" style="color:var(--blue-dark);font-size:16px;font-weight:700">${fmtEUR(p.total)}</span>
+        </div>` : ''
+      }
+    </div>
+    <button class="btn ghost" data-go="provision" style="margin-top:4px;margin-bottom:4px">Provisionsübersicht öffnen ›</button>
+    <button class="btn ghost" data-export-excel="${state.selectedMonth}" style="margin-bottom:8px">Excel-Export ${monthName(state.selectedMonth)} ⬇</button>
+  `;
+  
+  // Schnellzugriff
+  html += `
+    <p class="lbl">Schnellzugriff</p>
+    <div class="card tap" data-go="offen">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:600;font-size:15px">Offene Vorgänge</div>
+          <div style="font-size:12px;color:var(--text-mute);margin-top:2px">${openCnt} insgesamt offen</div>
+        </div>
+        <div style="font-size:22px;color:var(--text-mute)">›</div>
+      </div>
+    </div>
+  `;
+  
+  return html;
+}
+
+// ========== RENDER: LISTE (alle) ==========
+function renderListe(){
+  let html = '';
+  const all = state.customers.slice().sort((a,b) => (b.datum||'').localeCompare(a.datum||''));
+  
+  const q = state.searchQuery.trim().toLowerCase();
+  const filter = state.listFilter;
+  
+  const filtered = all.filter(c => {
+    if(q){
+      const txt = ((c.vorname||'') + ' ' + (c.nachname||'') + ' ' + (c.notizen||'')).toLowerCase();
+      if(!txt.includes(q)) return false;
+    }
+    if(filter === 'alle') return true;
+    if(filter === 'offen') return computeStatus(c) === 'Offen';
+    if(filter === 'abgeschlossen') return computeStatus(c) === 'Abgeschlossen';
+    if(filter === 'verloren') return computeStatus(c) === 'Verloren';
+    if(filter === 'aor') return isAoR(c);
+    if(filter === 'ret') return c.typ === 'RET';
+    if(filter === 'set') return c.typ === 'SET';
+    if(filter === 'nb') return c.typ === 'NB';
+    return true;
+  });
+  
+  const counts = {
+    alle: all.length,
+    offen: all.filter(c => computeStatus(c) === 'Offen').length,
+    abgeschlossen: all.filter(c => computeStatus(c) === 'Abgeschlossen').length,
+    verloren: all.filter(c => computeStatus(c) === 'Verloren').length,
+    aor: all.filter(isAoR).length,
+  };
+  
+  html += `<input class="search" type="search" placeholder="Suche nach Name oder Notiz..." value="${escapeHTML(state.searchQuery)}" id="searchInp">`;
+  html += `<div class="frow">
+    <button class="fc ${filter==='alle'?'active':''}" data-filter="alle">Alle (${counts.alle})</button>
+    <button class="fc ${filter==='offen'?'active':''}" data-filter="offen">Offen (${counts.offen})</button>
+    <button class="fc ${filter==='aor'?'active':''}" data-filter="aor">AoR (${counts.aor})</button>
+    <button class="fc ${filter==='abgeschlossen'?'active':''}" data-filter="abgeschlossen">Abgeschl. (${counts.abgeschlossen})</button>
+    <button class="fc ${filter==='verloren'?'active':''}" data-filter="verloren">Verloren (${counts.verloren})</button>
+  </div>`;
+  
+  if(filtered.length === 0){
+    if(all.length === 0){
+      html += `<div class="empty">
+        <div class="ic">📋</div>
+        <div style="margin-bottom:12px">Noch keine Vorgänge erfasst.</div>
+        <button class="btn" data-go="neu" style="max-width:200px;margin:0 auto">Ersten Kunden anlegen</button>
+      </div>`;
+    } else {
+      html += `<div class="empty"><div>Keine Treffer für die Filter.</div></div>`;
+    }
+  } else {
+    html += '<div class="card" style="padding:0">';
+    for(const c of filtered){
+      html += renderCustRow(c);
+    }
+    html += '</div>';
+  }
+  
+  return html;
+}
+
+function renderCustRow(c){
+  const status = computeStatus(c);
+  const statusCls = status === 'Offen' ? 'o' : (status === 'Abgeschlossen' ? 'd' : 'l');
+  const aor = isAoR(c);
+  const open = computeStatus(c) === 'Offen';
+  const days = c.datum ? daysBetween(c.datum, todayISO()) : 0;
+  
+  let meta = `<span class="chip typ">${c.typ}</span>` + fmtDate(c.datum);
+  if(open && days > 0) meta += ' · ' + days + ' Tg offen';
+  if(c.rezept_eingang) meta += ' · Rezept ' + fmtDate(c.rezept_eingang);
+  
+  return `<div class="cust" data-edit="${c.id}">
+    <div class="top">
+      <div class="n">${escapeHTML(c.nachname)}, ${escapeHTML(c.vorname)}</div>
+      <span class="chip ${statusCls}">${status}</span>
+    </div>
+    <div class="m">${meta}${aor ? '<span class="chip aor">AoR</span>' : ''}</div>
+  </div>`;
+}
+
+// ========== RENDER: OFFEN ==========
+function renderOffen(){
+  const open = state.customers
+    .filter(c => computeStatus(c) === 'Offen')
+    .sort((a,b) => (a.datum||'').localeCompare(b.datum||''));
+  
+  const aor = open.filter(isAoR);
+  const other = open.filter(c => !isAoR(c));
+  
+  let html = '';
+  
+  if(open.length === 0){
+    html += `<div class="empty">
+      <div class="ic">✓</div>
+      <div>Keine offenen Vorgänge.</div>
+      <div style="margin-top:6px;font-size:12px">Alles erledigt!</div>
+    </div>`;
+    return html;
+  }
+  
+  // AoR section first - the prominent one
+  if(aor.length > 0){
+    html += `<p class="lbl" style="margin-top:0">Aufträge ohne Rezept (${aor.length})</p>`;
+    html += '<div class="card" style="padding:0;border-left:3px solid var(--orange)">';
+    for(const c of aor){
+      const days = daysBetween(c.datum, todayISO());
+      html += `<div class="cust" data-edit="${c.id}">
+        <div class="top">
+          <div class="n">${escapeHTML(c.nachname)}, ${escapeHTML(c.vorname)}</div>
+          <span class="chip aor">${days} Tg</span>
+        </div>
+        <div class="m"><span class="chip typ">${c.typ}</span>Termin ${fmtDate(c.datum)} · Rezept fehlt</div>
+      </div>`;
+    }
+    html += '</div>';
+  }
+  
+  if(other.length > 0){
+    html += `<p class="lbl">Weitere offene Vorgänge (${other.length})</p>`;
+    html += '<div class="card" style="padding:0">';
+    for(const c of other){
+      const days = c.datum ? daysBetween(c.datum, todayISO()) : 0;
+      html += `<div class="cust" data-edit="${c.id}">
+        <div class="top">
+          <div class="n">${escapeHTML(c.nachname)}, ${escapeHTML(c.vorname)}</div>
+          <span class="chip o">Offen</span>
+        </div>
+        <div class="m"><span class="chip typ">${c.typ}</span>Termin ${fmtDate(c.datum)}${days > 0 ? ' · ' + days + ' Tg' : ''}</div>
+      </div>`;
+    }
+    html += '</div>';
+  }
+  
+  return html;
+}
+
+// ========== RENDER: FORM (neu/edit) ==========
+function renderForm(mode){
+  const c = (mode === 'edit')
+    ? state.customers.find(x => x.id === state.editingId) || {}
+    : { id: null, typ: 'RET', datum: todayISO(), vorname: '', nachname: '', notizen: '', rezept_eingang: '', eigenlead: false, grosselternbox: false, tl_empfehlung: false, rolli_verloren: false, eigener_kunde: false };
+  
+  const typ = c.typ || 'RET';
+  
+  let html = `<div class="seg" id="typSeg">
+    <button data-typ="RET" class="${typ==='RET'?'active':''}">RET (Rolli)</button>
+    <button data-typ="SET" class="${typ==='SET'?'active':''}">SET (Scooter)</button>
+    <button data-typ="NB" class="${typ==='NB'?'active':''}">NB (Nachbesuch)</button>
+  </div>
+  
+  <form id="custForm" autocomplete="off">
+    <div class="frow2">
+      <div class="field">
+        <label>Vorname *</label>
+        <input name="vorname" required value="${escapeHTML(c.vorname||'')}" autocapitalize="words">
+      </div>
+      <div class="field">
+        <label>Nachname *</label>
+        <input name="nachname" required value="${escapeHTML(c.nachname||'')}" autocapitalize="words">
+      </div>
+    </div>
+    
+    <div class="field">
+      <label>Termindatum *</label>
+      <input type="date" name="datum" required value="${escapeHTML(c.datum||todayISO())}">
+    </div>
+    
+    <!-- RET/SET fields -->
+    <div id="rsFields" style="display:${typ==='NB'?'none':'block'}">
+      <p class="lbl" style="margin-top:14px">Erprobungs-Details</p>
+      <div class="field">
+        <label>Rezept-Eingang (leer = noch nicht da)</label>
+        <input type="date" name="rezept_eingang" value="${escapeHTML(c.rezept_eingang||'')}">
+      </div>
+      <label class="tg"><input type="checkbox" name="eigenlead" ${c.eigenlead?'checked':''}><span>Eigenlead</span></label>
+      <label class="tg"><input type="checkbox" name="grosselternbox_rs" ${c.grosselternbox && typ!=='NB' ?'checked':''}><span>Großelternbox verkauft</span></label>
+      <label class="tg"><input type="checkbox" name="tl_empfehlung_rs" ${c.tl_empfehlung && typ!=='NB'?'checked':''}><span>TL-Empfehlung gegeben</span></label>
+      <label class="tg"><input type="checkbox" name="rolli_verloren" ${c.rolli_verloren?'checked':''}><span>Vorgang verloren (Rollstuhl nicht bestellt)</span></label>
+      <div class="notice" style="margin-top:-4px;margin-bottom:8px;font-size:11px;padding:8px 10px">Verluste zählen weiterhin als Nettotermin und fließen in die Quote ein. Der Haken entfernt den Vorgang lediglich aus der Offenen-Liste.</div>
+    </div>
+    
+    <!-- NB fields -->
+    <div id="nbFields" style="display:${typ==='NB'?'block':'none'}">
+      <p class="lbl" style="margin-top:14px">Nachbesuch-Details</p>
+      <label class="tg"><input type="checkbox" name="eigener_kunde" ${c.eigener_kunde?'checked':''}><span>Eigener Kunde</span></label>
+      <label class="tg"><input type="checkbox" name="grosselternbox_nb" ${c.grosselternbox && typ==='NB'?'checked':''}><span>Großelternbox verkauft</span></label>
+      <label class="tg"><input type="checkbox" name="tl_empfehlung_nb" ${c.tl_empfehlung && typ==='NB'?'checked':''}><span>TL-Empfehlung gegeben</span></label>
+    </div>
+    
+    ${mode === 'new' ? `
+      <div class="field" style="margin-top:14px">
+        <label>Erster Kommentar (optional)</label>
+        <textarea name="notizen" rows="2" placeholder="Bemerkungen, Auffälligkeiten, Vereinbarungen..."></textarea>
+      </div>
+    ` : ''}
+  `;
+
+  // Kommentar-Verlauf nur im Bearbeiten-Modus
+  if(mode === 'edit'){
+    const kommentare = Array.isArray(c.kommentare) ? c.kommentare : [];
+    const sorted = kommentare.slice().sort((a,b) => (a.ts||0) - (b.ts||0)); // chronologisch: alt → neu
+    html += `
+      <p class="lbl" style="margin-top:14px">Kommentar-Verlauf (${kommentare.length})</p>
+      ${sorted.length === 0
+        ? `<div class="card" style="text-align:center;color:var(--text-mute);font-size:13px;font-style:italic;padding:16px">Noch keine Kommentare erfasst</div>`
+        : `<div class="card" style="padding:0">
+            ${sorted.map(k => `
+              <div style="padding:10px 14px;border-bottom:0.5px solid var(--border)">
+                <div style="font-size:11px;color:var(--text-mute);margin-bottom:4px;font-weight:500;letter-spacing:0.3px">
+                  ${escapeHTML(fmtTs(k.ts))}
+                </div>
+                <div style="font-size:13.5px;color:var(--text);white-space:pre-wrap;line-height:1.45">${escapeHTML(k.text||'')}</div>
+              </div>
+            `).join('')}
+          </div>`
+      }
+      <div class="field" style="margin-top:10px;margin-bottom:6px">
+        <label>Neuer Kommentar</label>
+        <textarea id="newKommentar" rows="2" placeholder="Kommentar eingeben und absenden..."></textarea>
+      </div>
+      <button type="button" class="btn" data-add-kommentar="${c.id}" style="margin-top:0;margin-bottom:14px">Kommentar absenden</button>
+    `;
+
+    const status = computeStatus(c);
+    const statusCls = status === 'Offen' ? 'o' : (status === 'Abgeschlossen' ? 'd' : 'l');
+    html += `
+      <p class="lbl">Status</p>
+      <div id="statusPill" class="status-pill ${statusCls}"><span class="dot"></span>${status} (automatisch)</div>
+      <div class="field">
+        <label>Status manuell überschreiben</label>
+        <select name="status_manual">
+          <option value="">Automatisch</option>
+          <option value="Offen" ${c.status_manual==='Offen'?'selected':''}>Offen</option>
+          <option value="Abgeschlossen" ${c.status_manual==='Abgeschlossen'?'selected':''}>Abgeschlossen</option>
+          <option value="Verloren" ${c.status_manual==='Verloren'?'selected':''}>Verloren</option>
+        </select>
+      </div>
+    `;
+  }
+  
+  html += `<input type="hidden" name="typ" value="${typ}">`;
+  
+  if(mode === 'edit'){
+    html += `
+      <div id="saveIndicator" style="text-align:center;font-size:12px;color:var(--text-mute);padding:10px 0 6px;opacity:0.75">
+        Änderungen werden automatisch gespeichert
+      </div>
+      <button type="button" class="btn" data-cancel-edit>Fertig · zurück zur Liste</button>
+      <button type="button" class="btn danger" data-delete="${c.id}" style="margin-top:18px">Vorgang löschen</button>
+    `;
+  } else {
+    html += `<button type="submit" class="btn">Vorgang anlegen</button>`;
+  }
+  
+  html += `</form>`;
+  return html;
+}
+
+// ========== RENDER: PROVISIONSÜBERSICHT ==========
+function renderProvision(){
+  const r = PROVISION_RATES;
+  // Modular: Provisions-Positionen aus zentraler Konstante
+  const grundProvisionen = [
+    { pos: 'Rezepteingang RET',       betrag: r.ret_rezept, hinweis: 'Rolli-Rezept eingegangen' },
+    { pos: 'Rezepteingang SET',       betrag: r.set_rezept, hinweis: 'Scooter-Rezept eingegangen' },
+    { pos: 'Großelternbox (GB)',       betrag: r.gb,         hinweis: 'Zusatzverkauf im Termin' },
+    { pos: 'Treppenlift-Empfehlung',   betrag: r.tl,         hinweis: 'Weitergabe an TL-Team' },
+  ];
+  const zuschlaege = [
+    { pos: 'Eigenlead-Zuschlag auf RET', betrag: r.eigenlead_ret, hinweis: 'Selbst akquirierter Kunde' },
+    { pos: 'Eigenlead-Zuschlag auf SET', betrag: r.eigenlead_set, hinweis: 'Selbst akquirierter Kunde' },
+  ];
+
+  const fmt = fmtEUR;
+
+  const grundRows = grundProvisionen.map(p => `
+    <tr>
+      <td style="padding:10px 4px 10px 0;border-bottom:0.5px solid var(--border);vertical-align:top">
+        <div style="font-weight:500;color:var(--text)">${p.pos}</div>
+        <div style="font-size:11px;color:var(--text-mute);margin-top:2px">${p.hinweis}</div>
+      </td>
+      <td style="text-align:right;padding:10px 0;border-bottom:0.5px solid var(--border);vertical-align:top;font-weight:600;color:var(--blue-dark);white-space:nowrap">
+        ${fmt(p.betrag)}
+      </td>
+    </tr>`).join('');
+
+  const zuschlagItems = zuschlaege.map(p => `
+    <li class="row" style="list-style:none">
+      <span>
+        <span style="font-weight:500;color:var(--text)">${p.pos}</span>
+        <div style="font-size:11px;color:var(--text-mute);margin-top:2px">${p.hinweis}</div>
+      </span>
+      <span class="x" style="color:var(--orange-dark);font-weight:600;white-space:nowrap">+ ${fmt(p.betrag)}</span>
+    </li>`).join('');
+
+  // Beispielrechnung (dynamisch aus obigen Daten)
+  const bspRET = grundProvisionen[0].betrag;
+  const bspZuschlag = zuschlaege[0].betrag;
+  const bspGB = grundProvisionen[2].betrag;
+  const bspSumme = bspRET + bspZuschlag + bspGB;
+
+  return `
+    <section id="provisionUebersicht" aria-labelledby="provTitle" style="border-left:3px solid var(--orange);padding-left:12px;margin-bottom:16px">
+      <p class="lbl" id="provTitle" style="margin-top:0">Provisionsstaffelung</p>
+      <div class="card" style="padding:4px 14px">
+        <table style="width:100%;border-collapse:collapse;font-size:14px">
+          <thead>
+            <tr>
+              <th style="text-align:left;padding:10px 4px 10px 0;color:var(--text-mute);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:0.5px solid var(--border)">Position</th>
+              <th style="text-align:right;padding:10px 0;color:var(--text-mute);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:0.5px solid var(--border)">Betrag</th>
+            </tr>
+          </thead>
+          <tbody>${grundRows}</tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="provisionZuschlaege" aria-labelledby="zuschTitle" style="border-left:3px solid var(--orange);padding-left:12px;margin-bottom:16px">
+      <p class="lbl" id="zuschTitle" style="margin-top:0">Zuschläge</p>
+      <div class="card">
+        <ul style="margin:0;padding:0;list-style:none">${zuschlagItems}</ul>
+      </div>
+    </section>
+
+    <section id="provisionBeispiel" style="border-left:3px solid var(--blue);padding-left:12px;margin-bottom:16px">
+      <p class="lbl" style="margin-top:0">Beispielrechnung</p>
+      <div class="card" style="background:var(--blue-light);border-color:var(--blue-light)">
+        <div style="font-size:13px;line-height:1.6;color:var(--text)">
+          RET mit Eigenlead und Großelternbox:<br>
+          <span style="color:var(--text-mute)">${fmt(bspRET)} + ${fmt(bspZuschlag)} + ${fmt(bspGB)}</span>
+          <span style="float:right;font-weight:600;color:var(--blue-dark);font-size:16px">= ${fmt(bspSumme)}</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="provisionHinweise" style="margin-bottom:8px">
+      <p class="lbl">Hinweise</p>
+      <ul style="margin:0;padding-left:18px;font-size:12px;color:var(--text-mute);line-height:1.6">
+        <li>Rezept- und Eigenlead-Provisionen zählen im Monat des Rezept-Eingangs (Abrechnungsmonat).</li>
+        <li>Großelternbox und Treppenlift-Empfehlung zählen im Monat des Termins.</li>
+        <li>Werte gelten Stand ${new Date().toLocaleDateString('de-DE',{month:'long',year:'numeric'})}, Änderungen vorbehalten.</li>
+      </ul>
+    </section>
+
+    <button class="btn ghost" data-go="mehr" style="margin-top:8px">‹ Zurück zu Mehr</button>
+  `;
+}
+
+// ========== RENDER: MEHR ==========
+function renderMehr(){
+  const total = state.customers.length;
+  const sizeKB = (new Blob([JSON.stringify(state.customers)]).size / 1024).toFixed(1);
+  
+  let html = `
+    <p class="lbl">Daten</p>
+    <div class="card">
+      <div class="row"><span class="k">Gespeicherte Vorgänge</span><span class="x">${total}</span></div>
+      <div class="row"><span class="k">Speichergröße</span><span class="x">${sizeKB} KB</span></div>
+      <div class="row"><span class="k">Speicherort</span><span class="x">Nur dieses iPhone</span></div>
+    </div>
+    
+    <div class="notice">
+      Alle Daten liegen ausschließlich lokal auf diesem Gerät (localStorage). 
+      Es findet keine Übertragung an Server statt. 
+      Daten gehen verloren, wenn du den Safari-Verlauf löschst oder die App vom Home-Bildschirm entfernst.
+    </div>
+    
+    <p class="lbl">Backup</p>
+    <div class="btn-row">
+      <button class="btn" data-export>Export (JSON)</button>
+      <button class="btn ghost" data-import>Import</button>
+    </div>
+    <input type="file" id="importFile" accept="application/json" style="display:none">
+
+    <p class="lbl">Monats-Auswertung</p>
+    <div class="card" style="padding:12px 14px">
+      <div style="font-size:13px;color:var(--text-mute);line-height:1.5;margin-bottom:10px">
+        Excel-Export nach Vorlage <strong style="color:var(--text)">Aufstellung eingeholter Rezepte</strong> – mit X-Markierungen für Rezepteingang RET/SET, Eigenlead, Großelternbox und TL-Empfehlung im gewählten Monat.
+      </div>
+      <button class="btn" data-export-excel="${state.selectedMonth}">Excel-Export ${monthName(state.selectedMonth)} ⬇</button>
+    </div>
+
+    <p class="lbl">Benachrichtigungen</p>
+    <div class="card" style="padding:12px 14px">
+      <div style="font-size:13px;color:var(--text-mute);line-height:1.5;margin-bottom:10px">
+        Beim Öffnen der App erhältst du eine System-Benachrichtigung für jeden Vorgang, der seit <strong style="color:var(--text)">${state.settings.benachrichtigung_ab_tagen || 7} Tagen</strong> offen ist. Der Warnhinweis oben im Dashboard erscheint auch ohne aktivierte Benachrichtigungen.
+      </div>
+      <label class="tg" style="margin-bottom:8px">
+        <input type="checkbox" id="notifToggle" ${state.settings.benachrichtigungen_aktiviert ? 'checked' : ''}>
+        <span>System-Benachrichtigungen aktivieren</span>
+      </label>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <button class="btn ghost" data-notif-test style="flex:1;margin:0">Test-Benachrichtigung</button>
+        <button class="btn ghost" data-notif-schwelle style="flex:1;margin:0">Schwelle: ${state.settings.benachrichtigung_ab_tagen || 7} Tage</button>
+      </div>
+    </div>
+    
+    <p class="lbl">KPI-Ziele</p>
+    <div class="card">
+      <div class="row"><span class="k">V2R-Quote</span><span class="x">${pct(state.settings.ziel_v2r)} %</span></div>
+      <div class="row"><span class="k">V2GB-Quote</span><span class="x">${pct(state.settings.ziel_v2gb)} %</span></div>
+      <div class="row"><span class="k">Eigenlead-Quote</span><span class="x">${pct(state.settings.ziel_eigenlead)} %</span></div>
+      <div class="row"><span class="k">TL-Quote</span><span class="x">${pct(state.settings.ziel_tl)} %</span></div>
+      <div class="row"><span class="k">AoR-Quote (max)</span><span class="x">${pct(state.settings.ziel_aor)} %</span></div>
+    </div>
+    <button class="btn ghost" data-edit-settings>Ziele bearbeiten</button>
+    
+    <p class="lbl">Provision</p>
+    <div class="card tap" data-go="provision" style="cursor:pointer">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:600;font-size:15px;color:var(--text)">Provisionsübersicht</div>
+          <div style="font-size:12px;color:var(--text-mute);margin-top:2px">Staffelung, Zuschläge & Beispielrechnung</div>
+        </div>
+        <div style="font-size:22px;color:var(--text-mute)">›</div>
+      </div>
+    </div>
+    
+    <p class="lbl">Gefahrenbereich</p>
+    <button class="btn danger" data-reset>Alle Daten löschen</button>
+    
+    <p class="lbl">App-Info</p>
+    <div class="card" style="font-size:13px;color:var(--text-mute);line-height:1.5">
+      <strong style="color:var(--blue-dark);font-weight:600">Fellerhoff Med Tec · Sales Tracker</strong><br>
+      Version 1.0 · Medizinische Mobilität. Präzise. Sicher.<br>
+      Lokaler Tracker für RET-, SET- und NB-Termine.<br>
+      <br>
+      <strong style="color:var(--text)">Tipp:</strong> Öffne diese Seite in Safari und tippe auf das Teilen-Symbol → „Zum Home-Bildschirm" für App-Erlebnis.
+    </div>
+  `;
+  
+  return html;
+}
+
+// ========== MAIN RENDER ==========
+function render(){
+  updateHeader();
+  
+  const main = document.getElementById('main');
+  let html = '';
+  switch(state.view){
+    case 'dashboard': html = renderDashboard(); break;
+    case 'liste': html = renderListe(); break;
+    case 'offen': html = renderOffen(); break;
+    case 'neu': html = renderForm('new'); break;
+    case 'edit': html = renderForm('edit'); break;
+    case 'mehr': html = renderMehr(); break;
+    case 'provision': html = renderProvision(); break;
+  }
+  main.innerHTML = html;
+  main.scrollTop = 0;
+  
+  // Update tabs
+  document.querySelectorAll('.tab').forEach(t => {
+    let active = t.dataset.go === state.view;
+    if(state.view === 'edit' && t.dataset.go === 'liste') active = true;
+    if(state.view === 'provision' && t.dataset.go === 'mehr') active = true;
+    t.classList.toggle('active', active);
+  });
+}
+
+// ========== ACTIONS ==========
+
+// Auto-Save Zustand
+let autoSaveTimer = null;
+let lastAutoSaveTs = null;
+
+// Liest den aktuellen Formularstand und schreibt ihn in state.customers[editingId]
+function autoSaveNow(){
+  if(!state.editingId) return;
+  const form = document.getElementById('custForm');
+  if(!form) return;
+  const idx = state.customers.findIndex(c => c.id === state.editingId);
+  if(idx < 0) return;
+
+  const fd = new FormData(form);
+  const typ = fd.get('typ');
+  const updates = {
+    typ,
+    vorname: (fd.get('vorname')||'').trim(),
+    nachname: (fd.get('nachname')||'').trim(),
+    datum: fd.get('datum'),
+    rezept_eingang: typ !== 'NB' ? (fd.get('rezept_eingang') || null) : null,
+    eigenlead: typ !== 'NB' && fd.get('eigenlead') === 'on',
+    rolli_verloren: typ !== 'NB' && fd.get('rolli_verloren') === 'on',
+    eigener_kunde: typ === 'NB' && fd.get('eigener_kunde') === 'on',
+    grosselternbox: (typ === 'NB' ? fd.get('grosselternbox_nb') : fd.get('grosselternbox_rs')) === 'on',
+    tl_empfehlung: (typ === 'NB' ? fd.get('tl_empfehlung_nb') : fd.get('tl_empfehlung_rs')) === 'on',
+    status_manual: fd.get('status_manual') || null,
+    updated_at: Date.now(),
+  };
+  Object.assign(state.customers[idx], updates);
+  saveState();
+  lastAutoSaveTs = Date.now();
+  updateSaveIndicator();
+  updateStatusPillLive();
+}
+
+function autoSaveDebounced(){
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(autoSaveNow, 500);
+}
+
+function flushAutoSave(){
+  if(autoSaveTimer){ clearTimeout(autoSaveTimer); autoSaveTimer = null; autoSaveNow(); }
+}
+
+function updateSaveIndicator(){
+  const el = document.getElementById('saveIndicator');
+  if(!el) return;
+  if(lastAutoSaveTs){
+    const t = new Date(lastAutoSaveTs).toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+    el.innerHTML = `<span style="color:var(--ok);font-weight:600">✓</span> Gespeichert um ${t}`;
+    el.style.opacity = '1';
+  } else {
+    el.innerHTML = 'Änderungen werden automatisch gespeichert';
+    el.style.opacity = '0.75';
+  }
+}
+
+// Aktualisiert die Status-Pille ohne Neurender (damit Fokus im Eingabefeld erhalten bleibt)
+function updateStatusPillLive(){
+  const c = state.customers.find(x => x.id === state.editingId);
+  if(!c) return;
+  const status = computeStatus(c);
+  const pill = document.getElementById('statusPill');
+  if(pill){
+    const cls = status === 'Offen' ? 'o' : status === 'Abgeschlossen' ? 'd' : 'l';
+    pill.className = 'status-pill ' + cls;
+    pill.innerHTML = `<span class="dot"></span>${status} (automatisch)`;
+  }
+}
+
+function navigateTo(view){
+  // Ausstehende Auto-Save-Änderungen aus dem Bearbeiten-Modus sichern
+  if(state.view === 'edit' && state.editingId) flushAutoSave();
+  if(view === 'neu') state.editingId = null;
+  state.view = view;
+  render();
+}
+
+function startEdit(id){
+  state.editingId = id;
+  state.view = 'edit';
+  render();
+}
+
+function saveCustomer(formData, editingId){
+  const typ = formData.get('typ');
+  const obj = {
+    id: editingId || uid(),
+    typ,
+    vorname: (formData.get('vorname')||'').trim(),
+    nachname: (formData.get('nachname')||'').trim(),
+    datum: formData.get('datum'),
+    notizen: (formData.get('notizen')||'').trim(),
+    rezept_eingang: typ !== 'NB' ? (formData.get('rezept_eingang') || null) : null,
+    eigenlead: typ !== 'NB' && formData.get('eigenlead') === 'on',
+    rolli_verloren: typ !== 'NB' && formData.get('rolli_verloren') === 'on',
+    eigener_kunde: typ === 'NB' && formData.get('eigener_kunde') === 'on',
+    grosselternbox: (typ === 'NB' ? formData.get('grosselternbox_nb') : formData.get('grosselternbox_rs')) === 'on',
+    tl_empfehlung: (typ === 'NB' ? formData.get('tl_empfehlung_nb') : formData.get('tl_empfehlung_rs')) === 'on',
+    status_manual: formData.get('status_manual') || null,
+    updated_at: Date.now(),
+  };
+  
+  if(!obj.vorname || !obj.nachname || !obj.datum){
+    alert('Bitte Vorname, Nachname und Datum ausfüllen.');
+    return false;
+  }
+  
+  if(editingId){
+    const idx = state.customers.findIndex(c => c.id === editingId);
+    if(idx >= 0){
+      obj.created_at = state.customers[idx].created_at;
+      // Kommentare übernehmen – die werden ausschließlich über "Kommentar absenden" verändert
+      obj.kommentare = Array.isArray(state.customers[idx].kommentare) ? state.customers[idx].kommentare : [];
+      // notizen-Feld nicht mehr durch die Form gesetzt, alte Werte behalten
+      obj.notizen = state.customers[idx].notizen || '';
+      state.customers[idx] = obj;
+    }
+  } else {
+    obj.created_at = Date.now();
+    // Neuanlage: Erst-Kommentar aus Notiz-Feld ableiten
+    obj.kommentare = [];
+    if(obj.notizen){
+      obj.kommentare.push({ ts: obj.created_at, text: obj.notizen });
+    }
+    state.customers.push(obj);
+  }
+  
+  saveState();
+  return true;
+}
+
+function addKommentar(customerId){
+  const textarea = document.getElementById('newKommentar');
+  if(!textarea) return;
+  const text = textarea.value.trim();
+  if(!text){
+    textarea.focus();
+    return;
+  }
+  const idx = state.customers.findIndex(c => c.id === customerId);
+  if(idx < 0) return;
+  if(!Array.isArray(state.customers[idx].kommentare)) state.customers[idx].kommentare = [];
+  state.customers[idx].kommentare.push({ ts: Date.now(), text });
+  state.customers[idx].updated_at = Date.now();
+  saveState();
+  render();
+}
+
+function deleteCustomer(id){
+  if(!confirm('Diesen Vorgang wirklich löschen?')) return;
+  state.customers = state.customers.filter(c => c.id !== id);
+  saveState();
+  state.view = 'liste';
+  state.editingId = null;
+  render();
+}
+
+function exportData(){
+  const data = JSON.stringify({ v: 1, exported_at: new Date().toISOString(), customers: state.customers, settings: state.settings }, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'fellerhoff-tracker-' + todayISO() + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// Monatlicher Excel-Export nach Vorlage "Aufstellung eingeholter Rezepte"
+function exportMonthExcel(ym){
+  if(typeof XLSX === 'undefined'){
+    alert('Excel-Export nicht verfügbar. Bitte Internet-Verbindung prüfen und Seite neu laden – die XLSX-Bibliothek wird beim Start geladen.');
+    return;
+  }
+
+  const monName = monthName(ym);
+
+  // Zeilen für die Hauptspalten A–G
+  const mainRows = [];
+  // Zusatzspalten I/J: externe/ausgeschiedene ADM-Nachbesuche
+  const nbRows = [];
+
+  const fmtDE = d => {
+    if(!d) return '';
+    const [y,m,dd] = d.split('-');
+    return `${dd}.${m}.${y}`;
+  };
+
+  for(const c of state.customers){
+    const rezMonth = c.rezept_eingang ? monthOf(c.rezept_eingang) : null;
+    const datMonth = c.datum ? monthOf(c.datum) : null;
+
+    // Hauptspalten – Kriterien:
+    //   Rolli-Rezept/Kauf  → RET mit Rezept-Eingang in diesem Monat, nicht verloren
+    //   Scooter-Rezept/Kauf → SET mit Rezept-Eingang in diesem Monat, nicht verloren
+    //   Eigenlead / GB / TL → Flag gesetzt UND Termin in diesem Monat
+    const xRolli    = rezMonth === ym && c.typ === 'RET' && !c.rolli_verloren;
+    const xScooter  = rezMonth === ym && c.typ === 'SET' && !c.rolli_verloren;
+    const xEigen    = datMonth === ym && !!c.eigenlead;
+    const xGB       = datMonth === ym && !!c.grosselternbox;
+    const xTL       = datMonth === ym && !!c.tl_empfehlung;
+
+    if(xRolli || xScooter || xEigen || xGB || xTL){
+      mainRows.push([
+        (c.nachname || '').trim(),
+        (c.vorname  || '').trim(),
+        xRolli   ? 'X' : '',
+        xScooter ? 'X' : '',
+        xEigen   ? 'X' : '',
+        xGB      ? 'X' : '',
+        xTL      ? 'X' : '',
+      ]);
+    }
+
+    // Externe Nachbesuche (nicht eigener Kunde)
+    if(c.typ === 'NB' && datMonth === ym && !c.eigener_kunde){
+      nbRows.push([
+        fmtDE(c.datum),
+        `${(c.nachname||'').trim()}, ${(c.vorname||'').trim()}`.replace(/^, |, $/g,''),
+      ]);
+    }
+  }
+
+  // Sortierung der Hauptzeilen: alphabetisch nach Nachname
+  mainRows.sort((a,b) => a[0].localeCompare(b[0], 'de'));
+
+  // Kopfzeile exakt nach Vorlage
+  const headers = [
+    'Nachname Kunde',
+    'Vorname Kunde',
+    'Rolli-Rezept/Kauf',
+    'Scooter-Rezept/Kauf',
+    'Eigenlead',
+    'großelternbox',
+    'TL-Empfehlung',
+    '',
+    'Datum Nachbesuch                    (nur für externe bzw. ausgeschiedene ADM gefahrene Termine)',
+    'Kundenname des NB       (nur für externe bzw. ausgeschiedene ADM gefahrene Termine)',
+    '! Haustürabsagen, die noch im Kalender stehen (Kundenname) !',
+  ];
+
+  // Zeilen zusammenbauen – Haustürabsagen-Spalte (K) bleibt leer
+  const totalRows = Math.max(mainRows.length, nbRows.length);
+  const data = [headers];
+  for(let i = 0; i < totalRows; i++){
+    const main = mainRows[i] || ['','','','','','',''];
+    while(main.length < 7) main.push('');
+    const nb = nbRows[i] || ['',''];
+    data.push([...main, '', nb[0], nb[1], '']);
+  }
+
+  // Wenn absolut nichts vorhanden ist: leere Vorlage mit Kopfzeile ausgeben
+  if(totalRows === 0){
+    data.push(['','','','','','','', '', '', '', '']);
+  }
+
+  const ws = XLSX.utils.aoa_to_sheet(data);
+  ws['!cols'] = [
+    { wch: 22 }, { wch: 18 }, { wch: 18 }, { wch: 20 },
+    { wch: 12 }, { wch: 15 }, { wch: 15 }, { wch: 3 },
+    { wch: 45 }, { wch: 45 }, { wch: 40 },
+  ];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Tabelle1');
+
+  const safeMonName = monName.replace(/\s+/g,'_');
+  const filename = `Aufstellung_eingeholter_Rezepte_${safeMonName}.xlsx`;
+  XLSX.writeFile(wb, filename);
+}
+
+function importData(file){
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if(!data.customers || !Array.isArray(data.customers)) throw new Error('Ungültiges Format');
+      if(!confirm('Import ersetzt alle aktuellen Daten (' + state.customers.length + ' → ' + data.customers.length + '). Fortfahren?')) return;
+      state.customers = data.customers;
+      if(data.settings) state.settings = Object.assign({}, DEFAULT_SETTINGS, data.settings);
+      saveState();
+      alert('Import erfolgreich: ' + data.customers.length + ' Vorgänge geladen.');
+      render();
+    } catch(err){
+      alert('Import fehlgeschlagen: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function resetAll(){
+  if(!confirm('Alle Daten unwiderruflich löschen?')) return;
+  if(!confirm('Sicher? Diese Aktion kann nicht rückgängig gemacht werden.')) return;
+  state.customers = [];
+  state.editingId = null;
+  saveState();
+  state.view = 'dashboard';
+  render();
+}
+
+function editSettings(){
+  const s = state.settings;
+  function ask(key, label){
+    const cur = pct(s[key]);
+    const inp = prompt(label + ' (% Ziel, 0-100):', cur);
+    if(inp === null) return;
+    const n = parseFloat(inp);
+    if(isNaN(n) || n < 0 || n > 100){ alert('Ungültig'); return; }
+    s[key] = n / 100;
+  }
+  ask('ziel_v2r', 'V2R-Quote'); ask('ziel_v2gb', 'V2GB-Quote'); ask('ziel_eigenlead', 'Eigenlead'); ask('ziel_tl', 'TL-Empfehlung'); ask('ziel_aor', 'AoR-Quote (max)');
+  saveState();
+  render();
+}
+
+// ========== EVENT BINDING ==========
+document.querySelector('.tb').addEventListener('click', (e) => {
+  const tab = e.target.closest('.tab');
+  if(tab && tab.dataset.go) navigateTo(tab.dataset.go);
+});
+
+document.getElementById('mNav').addEventListener('click', (e) => {
+  if(e.target.matches('[data-month-prev]')) { state.selectedMonth = shiftMonth(state.selectedMonth, -1); render(); }
+  else if(e.target.matches('[data-month-next]')) { state.selectedMonth = shiftMonth(state.selectedMonth, 1); render(); }
+  else if(e.target.matches('[data-month-today]')) { state.selectedMonth = todayISO().slice(0,7); render(); }
+});
+
+document.getElementById('main').addEventListener('click', (e) => {
+  // Customer row click → edit
+  const row = e.target.closest('[data-edit]');
+  if(row){ startEdit(row.dataset.edit); return; }
+  
+  // Navigation cards
+  const goCard = e.target.closest('[data-go]');
+  if(goCard && goCard.dataset.go){ navigateTo(goCard.dataset.go); return; }
+  
+  // AoR tap → filter list
+  if(e.target.closest('[data-tap-aor]')){ state.listFilter = 'aor'; state.searchQuery = ''; navigateTo('liste'); return; }
+  
+  // Filter buttons
+  const fc = e.target.closest('.fc');
+  if(fc && fc.dataset.filter){ state.listFilter = fc.dataset.filter; render(); return; }
+  
+  // Typ selector in form
+  const typBtn = e.target.closest('#typSeg button');
+  if(typBtn){
+    document.querySelectorAll('#typSeg button').forEach(b => b.classList.remove('active'));
+    typBtn.classList.add('active');
+    const typ = typBtn.dataset.typ;
+    document.querySelector('input[name="typ"]').value = typ;
+    document.getElementById('rsFields').style.display = (typ === 'NB') ? 'none' : 'block';
+    document.getElementById('nbFields').style.display = (typ === 'NB') ? 'block' : 'none';
+    // Auto-Save auch bei Termintyp-Wechsel
+    if(state.editingId) autoSaveNow();
+    return;
+  }
+  
+  // Cancel edit → vorher noch pendante Änderungen speichern
+  if(e.target.closest('[data-cancel-edit]')){
+    flushAutoSave();
+    state.editingId = null;
+    navigateTo('liste');
+    return;
+  }
+  
+  // Delete
+  const del = e.target.closest('[data-delete]');
+  if(del){ deleteCustomer(del.dataset.delete); return; }
+
+  // Kommentar absenden
+  const addKommBtn = e.target.closest('[data-add-kommentar]');
+  if(addKommBtn){ addKommentar(addKommBtn.dataset.addKommentar); return; }
+  
+  // Settings actions
+  if(e.target.closest('[data-export]')){ exportData(); return; }
+  if(e.target.closest('[data-import]')){ document.getElementById('importFile').click(); return; }
+  const excelBtn = e.target.closest('[data-export-excel]');
+  if(excelBtn){ exportMonthExcel(excelBtn.dataset.exportExcel || state.selectedMonth); return; }
+
+  // Notifications
+  if(e.target.closest('[data-notif-test]')){
+    (async () => {
+      if(!('Notification' in window)){
+        alert('Dein Gerät oder Browser unterstützt keine System-Benachrichtigungen. Der Inline-Hinweis im Dashboard funktioniert trotzdem.');
+        return;
+      }
+      if(Notification.permission !== 'granted'){
+        const ok = await requestNotificationPermission();
+        if(!ok){
+          alert('Benachrichtigungen wurden abgelehnt. Aktiviere sie in den iPhone-Einstellungen unter Safari → Website-Einstellungen.');
+          return;
+        }
+      }
+      const title = 'Test-Benachrichtigung';
+      const body = 'So sehen deine Erinnerungen aus, wenn ein Vorgang zu lange offen ist.';
+      if('serviceWorker' in navigator){
+        const reg = await navigator.serviceWorker.getRegistration();
+        if(reg && reg.showNotification){
+          await reg.showNotification(title, { body, icon: 'icons/apple-touch-icon.png' });
+          return;
+        }
+      }
+      new Notification(title, { body });
+    })();
+    return;
+  }
+  if(e.target.closest('[data-notif-schwelle]')){
+    const cur = state.settings.benachrichtigung_ab_tagen || 7;
+    const inp = prompt('Ab wie vielen Tagen soll eine Benachrichtigung ausgelöst werden?', String(cur));
+    if(inp === null) return;
+    const n = parseInt(inp, 10);
+    if(isNaN(n) || n < 1 || n > 365){ alert('Bitte einen Wert zwischen 1 und 365 eingeben.'); return; }
+    state.settings.benachrichtigung_ab_tagen = n;
+    saveState();
+    render();
+    return;
+  }
+  if(e.target.closest('[data-reset]')){ resetAll(); return; }
+  if(e.target.closest('[data-edit-settings]')){ editSettings(); return; }
+});
+
+document.getElementById('main').addEventListener('input', (e) => {
+  if(e.target.id === 'searchInp'){
+    state.searchQuery = e.target.value;
+    // Re-render just the list portion
+    render();
+    // Restore focus and cursor
+    const inp = document.getElementById('searchInp');
+    if(inp){ inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
+    return;
+  }
+  // Auto-Save: bei Text-Eingaben im Bearbeiten-Formular (debounced)
+  if(state.view === 'edit' && state.editingId && e.target.form && e.target.form.id === 'custForm'){
+    // Kommentar-Textarea nicht auto-speichern (wird über Button abgesendet)
+    if(e.target.id === 'newKommentar') return;
+    if(e.target.tagName === 'INPUT' && (e.target.type === 'text' || e.target.type === 'search')){
+      autoSaveDebounced();
+    } else if(e.target.tagName === 'TEXTAREA'){
+      autoSaveDebounced();
+    }
+  }
+});
+
+// Auto-Save auf Change-Events (Checkboxen, Datumsfelder, Select) – sofort speichern
+document.getElementById('main').addEventListener('change', (e) => {
+  if(state.view === 'edit' && state.editingId && e.target.form && e.target.form.id === 'custForm'){
+    if(e.target.id === 'newKommentar') return;
+    if(e.target.tagName === 'INPUT' && e.target.type === 'date') autoSaveNow();
+    else if(e.target.tagName === 'INPUT' && e.target.type === 'checkbox') autoSaveNow();
+    else if(e.target.tagName === 'SELECT') autoSaveNow();
+    else if(e.target.tagName === 'INPUT' && e.target.type === 'text') autoSaveNow(); // Fallback für 'blur'-artige Change-Events
+  }
+});
+
+document.getElementById('main').addEventListener('submit', (e) => {
+  if(e.target.id === 'custForm'){
+    e.preventDefault();
+    // Im Bearbeiten-Modus keinen Submit ausführen – Auto-Save übernimmt
+    if(state.editingId){
+      flushAutoSave();
+      state.editingId = null;
+      navigateTo('liste');
+      return;
+    }
+    const fd = new FormData(e.target);
+    const ok = saveCustomer(fd, state.editingId);
+    if(ok){ state.editingId = null; navigateTo('liste'); }
+  }
+});
+
+document.addEventListener('change', (e) => {
+  if(e.target.id === 'importFile'){
+    const f = e.target.files[0];
+    if(f) importData(f);
+    e.target.value = '';
+  }
+  if(e.target.id === 'notifToggle'){
+    (async () => {
+      if(e.target.checked){
+        if(!('Notification' in window)){
+          alert('Dein Browser oder deine iOS-Version unterstützt keine Push-Benachrichtigungen (mind. iOS 16.4 als PWA vom Home-Bildschirm).');
+          e.target.checked = false;
+          return;
+        }
+        const granted = await requestNotificationPermission();
+        if(!granted){
+          alert('Erlaubnis wurde nicht erteilt. Aktiviere sie ggf. später in den Systemeinstellungen.');
+          e.target.checked = false;
+          return;
+        }
+        state.settings.benachrichtigungen_aktiviert = true;
+        saveState();
+        // Direkt eine Prüfung ausführen
+        setTimeout(checkAndFireNotifications, 500);
+      } else {
+        state.settings.benachrichtigungen_aktiviert = false;
+        saveState();
+      }
+    })();
+  }
+});
+
+// Wenn App aus dem Hintergrund zurückkommt: erneut prüfen
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible'){
+    render();
+    checkAndFireNotifications();
+  }
+});
+
+// Service Worker für PWA-Betrieb registrieren
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => { console.log('SW registered', reg.scope); })
+      .catch(err => { console.warn('SW registration failed:', err); });
+  });
+}
+
+// ========== INIT ==========
+render();
+// Erste Notification-Prüfung leicht verzögert (damit SW Zeit hat sich zu registrieren)
+setTimeout(checkAndFireNotifications, 1500);
+
+})();
+</script>
+</body>
+</html>
